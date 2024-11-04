@@ -1,6 +1,6 @@
 import { Dot } from 'lucide-react';
-import { columns } from "./attended-patients/columns";
-import { DataTable } from './attended-patients/DataTable';
+import { columns } from "@/components/columns";
+import { DataTable } from '@/components/DataTable';
 import VisitChart from '@/components/VisitChart';
 import PresentDataChart from '@/components/PresentDataChart';
 
@@ -10,9 +10,9 @@ const page = async () => {
   const data = getData();
 
   return (
-    <section className="w-full laptop:container flex flex-col gap-2 mx-auto px-2">
-      <div className="flex justify-between items-center mt-2">
-        <h1 className="text-xl cursor-default font-normal">Dashboard</h1>
+    <section className="w-full flex flex-col gap-2 px-2">
+      <div className="flex justify-between items-center mt-2 text-[#0A416F]">
+        <h1 className="text-xl cursor-default font-semibold">Dashboard</h1>
         <div className="flex items-center gap-1 cursor-default">
           <Dot size={25} />
           <p className="text-sm -ml-2">High Priority</p>

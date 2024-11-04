@@ -14,11 +14,15 @@ import {
 
 export const columns = [
   {
-    accessorKey: "firstName",
+    accessorKey: "patientName",
+    header: "Patient Name",
+  },
+  {
+    accessorKey: "patientId",
     header: ({ column }) => {
       return (
         <div className="flex gap-1 items-center">
-        <p>First Name</p>
+        <p>Patient Id</p>
         <Button
           className=''
           variant="ghost"
@@ -31,20 +35,28 @@ export const columns = [
     },
   },
   {
-    accessorKey: "lastName",
-    header: "Last Name",
+    accessorKey: "age",
+    header: "Age",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "gender",
+    header: "Gender",
   },
   {
-    accessorKey: "phonenumber",
-    header: "Phone Number",
+    accessorKey: "OD",
+    header: "OD",
   },
   {
-    accessorKey: "course",
-    header: "Course of Interest",
+    accessorKey: "OS",
+    header: "OS",
+  },
+  {
+    accessorKey: "allergies",
+    header: "Allergies",
+  },
+  {
+    accessorKey: "remark",
+    header: "Remark",
   },
   {
     id: "actions",
@@ -61,10 +73,11 @@ export const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(attendee.email)}
-            >
-              Copy Email
+            <DropdownMenuItem>
+              View Patient
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              Edit Patient
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </DropdownMenuContent>

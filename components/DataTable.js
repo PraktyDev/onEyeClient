@@ -55,24 +55,23 @@ export function DataTable({ columns, data }) {
   });
 
   return (
-    <div className="rounded-md bg-white h-5/6">
+    <div className="rounded-md bg-white">
       <div className="flex items-center justify-between gap-2 py-4 px-4">
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">Patient</p>
-          <p>Attended Patients</p>
+        <div className="flex flex-col text-[#0A416F]">
+          <p className="text-sm tablet:text-base laptop:text-lg font-bold">Patients List</p>
         </div>
         <Input
-          placeholder="Filter emails..."
-          value={table.getColumn("email")?.getFilterValue() ?? ""}
+          placeholder="Filter PatientId..."
+          value={table.getColumn("patientId")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("patientId")?.setFilterValue(event.target.value)
           }
           className="max-w-sm bg-slate-200"
         />
         <div className="flex gap-3 items-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="">
+              <Button variant="outline" className="text-[#0A416F]">
                 Fields
               </Button>
             </DropdownMenuTrigger>
@@ -84,7 +83,7 @@ export function DataTable({ columns, data }) {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
+                      className="capitalize text-[#0A416F]"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
@@ -97,9 +96,9 @@ export function DataTable({ columns, data }) {
             </DropdownMenuContent>
           </DropdownMenu>
           <Link
-            href="/doctor/dashoard/attended-patients"
+            href="/doctor/dashboard/attended-patients"
             className={`text-nowrap underline underline-offset-4 text-blue-700 hover:text-purple-700 font-semibold text-sm ${
-              pathname === "/doctor/dashoard/attended-patients" ? "hidden" : "block"
+              pathname === "/doctor/dashboard" ? "block" : "hidden"
             }`}
           >
             See All
@@ -116,7 +115,7 @@ export function DataTable({ columns, data }) {
                   return (
                     <TableHead
                       key={header.id}
-                      className="font-medium text-black text-nowrap"
+                      className="font-medium text-[#0A416F] text-nowrap"
                     >
                       {header.isPlaceholder
                         ? null
@@ -151,7 +150,7 @@ export function DataTable({ columns, data }) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-[#0A416F]"
                 >
                   No Patients.
                 </TableCell>
@@ -161,7 +160,7 @@ export function DataTable({ columns, data }) {
         </Table>
       </div>
 
-      <div className="flex items-center justify-center space-x-2 py-4">
+      <div className="flex items-center justify-center space-x-2 py-4 text-[#0A416F]">
         <Button
           variant="outline"
           size="sm"
