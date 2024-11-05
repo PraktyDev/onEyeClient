@@ -20,7 +20,7 @@ export default function DoctorDashboardLayout({ children }) {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
 
   return (
-    <div className='flex mx-1 laptop:mx-0'>
+    <div className='flex mx-2 laptop:mx-0'>
         <div className='hidden laptop:block fixed z-10'>
           <DocSideNav
             isExpanded={isSidebarExpanded}

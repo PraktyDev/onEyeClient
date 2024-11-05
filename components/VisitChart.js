@@ -10,9 +10,9 @@ import {
 const VisitChart = () => {
 
   return (
-    <Card className='h-[250px]'>
+    <Card className='h-[250px] text-[#0A416F]'>
       <CardHeader>
-        <CardTitle>Visit Chart</CardTitle>
+        <CardTitle className='text-lg'>Visit Chart</CardTitle>
         <CardDescription>Monthly Patient visit plot chart</CardDescription>
       </CardHeader>
       <CardContent>

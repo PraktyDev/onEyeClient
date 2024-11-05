@@ -12,7 +12,7 @@ export default function PatientsPage() {
   return (
     <section className="w-full flex flex-col gap-2">
       <div className="flex justify-between items-center mt-4 text-[#0A416F]">
-        <h1 className="text-xl cursor-default font-semibold">Referred Patients</h1>
+        <h1 className="text-lg tablet:text-xl cursor-default font-semibold">Referred Patients</h1>
         <div className="flex items-center gap-1 cursor-default">
           <Dot size={25} />
           <p className="text-sm -ml-2">High Priority</p>

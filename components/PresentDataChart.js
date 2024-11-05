@@ -10,9 +10,9 @@ import {
   const PresentDataChart = () => {
   
     return (
-      <Card className='h-[250px]'>
+      <Card className='h-[250px] text-[#0A416F]'>
         <CardHeader>
-          <CardTitle>Today's Data Chart</CardTitle>
+          <CardTitle className='text-lg'>Today's Data Chart</CardTitle>
           <CardDescription>Current Patient Chart</CardDescription>
         </CardHeader>
         <CardContent>

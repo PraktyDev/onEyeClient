@@ -18,6 +18,12 @@ import {
   } from "@/components/ui/sheet"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
+  
 
 const DocNav = () => {
     const fullName = "Praise Akintayo"
@@ -36,7 +42,7 @@ const DocNav = () => {
         </div>
         </SheetTrigger>
         <SheetContent side='left' className='w-[200px] flex flex-col grow gap-5'>
-            <div className="flex items-center justify-center gap-3 mt-8 w-full">
+            <div className="flex items-center justify-center gap-3 mt-10 w-full">
                 <div className="bg-[#8BC2F2] flex w-8 h-8 laptop:hidden items-center justify-center rounded-md p-1 shadow-md transition-transform duration-700 ease-in-out transform scale-100 hover:scale-90">
                     <OnLogo />
                 </div>
@@ -126,13 +132,22 @@ const DocNav = () => {
     <div className="w-full rounded-tr-sm rounded-br-sm laptop:rounded-md flex justify-between items-center bg-white py-2 px-2 laptop:px-4">
         <div className="flex flex-col text-[#0A416F]">
             <h3 className="font-semibold text-sm tablet:text-md">Welcome Dr <span>{firstName ? firstName : 'null'}</span></h3>
-            <p className="text-xs laptop:text-sm text-slate-700 font-thin">You have seen 0 patient(s) today</p>
+            <p className="text-xs laptop:text-sm text-slate-700 font-light">You have seen 0 patient(s) today</p>
         </div>
 
         <div className="flex items-center gap-3">
-            <Mail color="#0A416F" size={20} />
-            <Bell color="#0A416F" size={20} />
+            <Popover className='relative'>
+                <PopoverTrigger><Mail color="#0A416F" size={20} /></PopoverTrigger>
+                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm'>No messages</PopoverContent>
+            </Popover>
+
+            <Popover className='relative'>
+                <PopoverTrigger><Bell color="#0A416F" size={20} /></PopoverTrigger>
+                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm'>No notifications</PopoverContent>
+            </Popover>
+            
             <Separator orientation='vertical' className='h-7 border-1 rounded' />
+
             <DropdownMenu className='relative'>
                 <DropdownMenuTrigger>
                     <Avatar className='cursor-pointer'>
@@ -140,15 +155,17 @@ const DocNav = () => {
                         <AvatarFallback className='font-semibold text-sm text-[#0A416F]'>{initial}{last}</AvatarFallback>
                     </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className='w-[200px] absolute top-2 laptop:top-2.5 -right-6 laptop:-right-8'>
+                <DropdownMenuContent className='w-[200px] flex flex-col absolute top-2 laptop:top-2.5 -right-6 laptop:-right-8'>
                     <DropdownMenuLabel className='flex gap-2 items-center'>
                         <div className='flex flex-col text-[#0A416F]'>
                             <p className='text-md font-semibold'>Praise Akintayo</p>
-                            <p className='text-sm font-thin'>Doctor</p>
+                            <p className='text-sm font-light'>Doctor</p>
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <Button className='w-full mt-2 bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F]'>Logout</Button>
+                    <div className="w-full flex justify-center my-1">
+                        <Button className='w-[60px] h-[25px] bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F] rounded-sm'>Logout</Button>
+                    </div>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
