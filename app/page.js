@@ -55,7 +55,7 @@ const page = () => {
           </div>
         </div>
         <div className='laptop:basis-1/3 tablet:hidden laptop:flex transition-transform duration-700 ease-in-out transform scale-100 hover:scale-95'>
-          <Image alt='' src={'/images/slit.jpg'} width={1000} height={1000} className='rounded-2xl h-44 object-cover'/>
+          <Image alt='slit image' src={'/images/slit.jpg'} width={1000} height={1000} className='rounded-2xl h-44 object-cover'/>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ const page = () => {
           <div className='z-20 h-48 flex items-center justify-center'><Typewriter /></div>
         </div>
         <div className='hidden tablet:block basis-3/4 transition-transform duration-700 ease-in-out transform scale-100 hover:scale-95'>
-          <Image alt='' src={'/images/eyeball.jpg'} width={1000} height={1000} className='rounded-2xl h-48 object-cover'/>
+          <Image alt='eyeball image' src={'/images/eyeball.jpg'} width={1000} height={1000} className='rounded-2xl h-48 object-cover'/>
         </div>
       </div>
     </section>
