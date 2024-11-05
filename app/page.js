@@ -6,10 +6,10 @@ import Link from 'next/link'
 
 const page = () => {
   return (
-    <section className='w-full max-w-6xl mx-auto my-5 tablet:my-10'>
+    <section className='w-full max-w-6xl mx-auto mt-10 mb-5 tablet:my-10'>
       <div className='flex flex-col tablet:flex-row items-center justify-center gap-10 mb-6 laptop:mb-1'>
         <div className='flex flex-col justify-center items-center gap-6'>
-          <div className='flex flex-col cursor-default'>
+          <div className='flex flex-col cursor-default gap-5'>
             <div className='flex flex-col gap-2 tablet:gap-4 items-center'>
               <div className='flex items-center justify-center w-14 tablet:w-16 h-14 tablet:h-16 bg-[#8BC2F2] rounded-md'>
                 <OnLogo />
@@ -19,7 +19,7 @@ const page = () => {
                 <p className='text-xs tablet:text-base laptop:text-lg -mt-2'>TELEHEALTH</p>
               </div>
             </div>
-            <div className='text-center leading-7 w-auto tablet:w-[510px]'>
+            <div className='text-center leading-7 w-auto tablet:w-[510px] text-[#0A416F]'>
               Making quality eyecare affordable and accessible for all. Eliminating and reducing queues in our hospitals using tech
             </div>
           </div>
