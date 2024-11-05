@@ -10,16 +10,16 @@ const page = () => {
       <div className='flex flex-col tablet:flex-row items-center justify-center gap-10 mb-6 laptop:mb-1'>
         <div className='flex flex-col justify-center items-center gap-6'>
           <div className='flex flex-col cursor-default'>
-            <div className='flex flex-col gap-7 tablet:gap-5 items-center'>
-              <div className='flex items-center justify-center w-20 h-20 bg-[#8BC2F2] rounded-full'>
+            <div className='flex flex-col gap-2 tablet:gap-4 items-center'>
+              <div className='flex items-center justify-center w-14 tablet:w-16 h-14 tablet:h-16 bg-[#8BC2F2] rounded-md'>
                 <OnLogo />
               </div>
               <div className='flex flex-col text-right text-[#0A416F]'>
                 <h1 className='text-3xl tablet:text-4xl laptop:text-5xl font-bold'>ON-EYE</h1>
-                <p className='text-xs tablet:text-md laptop:text-lg'>TELEHEALTH</p>
+                <p className='text-xs tablet:text-base laptop:text-lg -mt-2'>TELEHEALTH</p>
               </div>
             </div>
-            <div className='text-center leading-7 w-auto tablet:w-[500px] laptop:w-auto'>
+            <div className='text-center leading-7 w-auto tablet:w-[510px]'>
               Making quality eyecare affordable and accessible for all. Eliminating and reducing queues in our hospitals using tech
             </div>
           </div>

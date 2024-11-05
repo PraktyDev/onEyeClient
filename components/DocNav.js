@@ -17,7 +17,7 @@ import {
     SheetTrigger,
   } from "@/components/ui/sheet"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
     Popover,
     PopoverContent,
@@ -32,6 +32,11 @@ const DocNav = () => {
     const initial = nameArray[0]?.[0] ?? ''
     const last = nameArray[1]?.[0] ?? ''
     const pathname = usePathname();
+    const router = useRouter()
+
+    const onLogout = () => {
+        router.push('/doctor')
+    }
 
   return (
     <section className="flex gap-0 shadow-md">
@@ -138,12 +143,12 @@ const DocNav = () => {
         <div className="flex items-center gap-3">
             <Popover className='relative'>
                 <PopoverTrigger><Mail color="#0A416F" size={20} /></PopoverTrigger>
-                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm'>No messages</PopoverContent>
+                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm text-[#0A416F]'>No messages</PopoverContent>
             </Popover>
 
             <Popover className='relative'>
                 <PopoverTrigger><Bell color="#0A416F" size={20} /></PopoverTrigger>
-                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm'>No notifications</PopoverContent>
+                <PopoverContent className='absolute top-3.5 laptop:top-4 -right-3 text-sm text-[#0A416F]'>No notifications</PopoverContent>
             </Popover>
             
             <Separator orientation='vertical' className='h-7 border-1 rounded' />
@@ -164,7 +169,7 @@ const DocNav = () => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <div className="w-full flex justify-center my-1">
-                        <Button className='w-[60px] h-[25px] bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F] rounded-sm'>Logout</Button>
+                        <Button onClick={onLogout} className='w-[60px] h-[25px] bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F] rounded-sm'>Logout</Button>
                     </div>
                 </DropdownMenuContent>
             </DropdownMenu>
