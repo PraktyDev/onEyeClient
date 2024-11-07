@@ -134,7 +134,7 @@ const DocNav = () => {
         </SheetContent>
     </Sheet>
 
-    <div className="w-full rounded-tr-sm rounded-br-sm laptop:rounded-md flex justify-between items-center bg-white py-2 px-2 laptop:px-4">
+    <div className="w-full rounded-tr-sm rounded-br-sm laptop:rounded-md flex justify-between items-center bg-white py-3 px-2 laptop:px-4">
         <div className="flex flex-col text-[#0A416F]">
             <h3 className="font-semibold text-sm tablet:text-md">Welcome Dr <span>{firstName ? firstName : 'null'}</span></h3>
             <p className="text-xs laptop:text-sm text-slate-700 font-light">You have seen 0 patient(s) today</p>

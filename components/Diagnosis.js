@@ -1,7 +1,7 @@
 "use client"
 import { format } from "date-fns"
 import { CalendarIcon, PlusCircle } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -19,35 +19,141 @@ import {
     TableRow,
   } from "@/components/ui/table"
 import { Card, CardContent } from "./ui/card"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useFieldArray, useForm } from "react-hook-form"
+import * as z from "zod"
+import { Oval  } from 'react-loader-spinner'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import axios from "axios"
+import { toast } from "sonner"
+import { Textarea } from "./ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+
+const diagnosisSchema = z.object({
+    diagnosisName: z.string().min(1, "Diagnosis is required"),
+    eye: z.enum(["OD", "OS", "OU"]),
+    remark: z.string().optional(),
+})
+
+const investigationSchema = z.object({
+    investigationName: z.string().optional(),
+    eye: z.enum(["OD", "OS", "OU"]).optional(),
+    remark: z.string().optional(),
+})
+
+const medicationSchema = z.object({
+    medicationName: z.string().min(1, "Medication is required"),
+    dosage: z.enum(["HS", "BDS", "TDS", "QDS", "SOS", "custom"]),
+    days: z.string().optional(),
+    route: z.enum(["topical", "oral"]),
+    eye: z.enum(["OD", "OS", "OU"]),
+    instruction: z.string().optional(),
+})
+
+const referralSchema = z.object({
+    hospitalName: z.string().optional(),
+    opticalName: z.string().optional(),
+    reason: z.string().optional(),
+    note: z.string().optional(),
+})
+
+const formSchema = z.object({
+    diagnosis: z.array(diagnosisSchema).min(1, "At least one diagnosis is required"),
+    investigation: z.array(investigationSchema).optional(),
+    medication: z.array(medicationSchema).min(1, "At least one medication is required"),
+    referral: z.array(referralSchema).optional(),
+})
 
 const Diagnosis = () => {
     const [date, setDate] = useState()
 
-    const [showDiagnosisTable, setShowDiagnosisTable] = useState(false)
-    const [showInvestigationTable, setShowInvestigationTable] = useState(false)
-    const [showMedicationTable, setShowMedicationTable] = useState(false)
-    const [showReferralTable, setShowReferralTable] = useState(false)
-
-    const diagnosisRow = () => {
-      setShowDiagnosisTable(true)
+    const addDiagnosisRow = () => {
+        diagnosisArray.append({ diagnosisName: '', eye: undefined, remark: '' })
     }
 
-    const investigationRow = () => {
-        setShowInvestigationTable(true)
+    const addInvestigationRow = () => {
+        investigationArray.append({ investigationName: '', eye: undefined, remark: '' })
     }
 
-    const medicationRow = () => {
-        setShowMedicationTable(true)
+    const addMedicationRow = () => {
+        medicationArray.append({ medicationName: '', dosage: undefined, days: '', route: undefined, eye: undefined, instruction: '' })
     }
 
-    const referralRow = () => {
-        setShowReferralTable(true)
+    const addReferralRow = () => {
+        referralArray.append({ hospitalName: '', opticalName: '', reason: '', note: ''})
     }
+
+
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            diagnosis: [{ diagnosisName: '', eye: undefined, remark: '' }],
+            investigation: [{ investigationName: '', eye: undefined, remark: '' }],
+            medication: [{ medicationName: '', dosage: undefined, days:'', route:'', eye: undefined, instruction: '' }],
+            referral: [{ hospitalName: '', opticalName: '', reason: '', note: '' }],
+        },
+    })
+
+    const diagnosisArray = useFieldArray({
+        name: "diagnosis",
+        control: form.control,
+    })
+
+    const investigationArray = useFieldArray({
+        name: "investigation",
+        control: form.control,
+    })
+
+    const medicationArray = useFieldArray({
+        name: "medication",
+        control: form.control,
+    })
+
+    const referralArray = useFieldArray({
+        name: "referral",
+        control: form.control,
+    })
+    
+      const { reset } = form
+      const { isDirty, isValid, isSubmitting, isSubmitSuccessful } = form.formState
+     
+      const onSubmit = async (values) => {
+
+        const data = {
+            values: values,
+            date: date
+        }
+
+        try {
+          // await axios.post('endpoint', values)
+          console.log(JSON.stringify(data))
+          toast("Diagnosis added successfully")
+        } catch (error) {
+          toast("Diagnosis added failed")
+        }
+      }
+    
+      useEffect(()=>{
+        if(isSubmitSuccessful){
+          reset()
+        }
+      },[isSubmitSuccessful, reset])
   
 
 
   return (
-    <section className="flex flex-col gap-2">
+    <Form {...form} >
+    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <div className="flex flex-col tablet:flex-row gap-2">
             <Card className='relative w-full text-[#0A416F] pt-6'>
                 <CardContent>
@@ -61,22 +167,65 @@ const Diagnosis = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium text-left">Headache</TableCell>
-                            <TableCell className="font-medium text-center">-</TableCell>
-                            <TableCell className="font-medium text-center">no remark</TableCell>
+                    {diagnosisArray.fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                            <TableCell className="font-medium text-left px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`diagnosis.${index}.diagnosisName`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="diagnosis name" {...field} className='w-full placeholder:text-xs focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`diagnosis.${index}.eye`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger className="placeholder:text-xs w-full focus:ring-1 font-normal focus:ring-[#8BC2F2] rounded-sm" >
+                                                <SelectValue className="" placeholder="eye" />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="OD">OD</SelectItem>
+                                                <SelectItem value="OS">OS</SelectItem>
+                                                <SelectItem value="OU">OU</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`diagnosis.${index}.remark`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Textarea placeholder="remark" {...field} className='w-full placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
                         </TableRow>
-                        {showDiagnosisTable && (
-                            <TableRow>
-                                <TableCell className="font-medium text-left">Eye Strain</TableCell>
-                                <TableCell className="font-medium text-center">OU</TableCell>
-                                <TableCell className="font-medium text-center">no remark</TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
+                    ))}
+                    </TableBody> 
                     </Table>
                 </CardContent>
-                <div onClick={diagnosisRow} className='cursor-default absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
+                <div onClick={addDiagnosisRow} className='cursor-default absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
                     <PlusCircle size={15} />
                     <p className='text-xs'>Add</p>
                 </div>
@@ -94,22 +243,65 @@ const Diagnosis = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium text-left">Biometry</TableCell>
-                            <TableCell className="font-medium text-center">-</TableCell>
-                            <TableCell className="font-medium text-center">no remark</TableCell>
+                    {investigationArray.fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                            <TableCell className="font-medium text-left px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`investigation.${index}.investigationName`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="investigation name" {...field} className='w-full placeholder:text-xs focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`investigation.${index}.eye`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger className="placeholder:text-xs w-full focus:ring-1 font-normal focus:ring-[#8BC2F2] rounded-sm" >
+                                                <SelectValue className="" placeholder="eye" />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="OD">OD</SelectItem>
+                                                <SelectItem value="OS">OS</SelectItem>
+                                                <SelectItem value="OU">OU</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`investigation.${index}.remark`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Textarea placeholder="remark" {...field} className='w-full placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
                         </TableRow>
-                        {showInvestigationTable && (
-                            <TableRow>
-                                <TableCell className="font-medium text-left">CT Scan</TableCell>
-                                <TableCell className="font-medium text-center">-</TableCell>
-                                <TableCell className="font-medium text-center">no remark</TableCell>
-                            </TableRow>
-                        )}
+                    ))}
                     </TableBody>
                     </Table>
                 </CardContent>
-                <div onClick={investigationRow} className='cursor-default absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
+                <div onClick={addInvestigationRow} className='cursor-default absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
                     <PlusCircle size={15} />
                     <p className='text-xs'>Add</p>
                 </div>
@@ -123,36 +315,135 @@ const Diagnosis = () => {
                 <TableHeader className='bg-slate-50'>
                     <TableRow>
                         <TableHead className='text-left'>Medication</TableHead>
-                        <TableHead className='text-center'>Dosage</TableHead>
-                        <TableHead className='text-center'>Days</TableHead>
-                        <TableHead className='text-center'>Route</TableHead>
-                        <TableHead className='text-center'>Eye</TableHead>
+                        <TableHead className='text-center w-[100px]'>Dosage</TableHead>
+                        <TableHead className='text-center w-[70px]'>Days</TableHead>
+                        <TableHead className='text-center w-[100px]'>Route</TableHead>
+                        <TableHead className='text-center w-[100px]'>Eye</TableHead>
                         <TableHead className='text-center'>Instructions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow>
-                        <TableCell className="font-medium text-left">Paracetamol</TableCell>
-                        <TableCell className="font-medium text-center">BDS</TableCell>
-                        <TableCell className="font-medium text-center">3</TableCell>
-                        <TableCell className="font-medium text-center">Oral</TableCell>
-                        <TableCell className="font-medium text-center">-</TableCell>
-                        <TableCell className="font-medium text-center">Postprandial</TableCell>
-                    </TableRow>
-                    {showMedicationTable && (
-                        <TableRow>
-                            <TableCell className="font-medium text-left">Aspirin</TableCell>
-                            <TableCell className="font-medium text-center">500 mg</TableCell>
-                            <TableCell className="font-medium text-center">2</TableCell>
-                            <TableCell className="font-medium text-center">Oral</TableCell>
-                            <TableCell className="font-medium text-center">-</TableCell>
-                            <TableCell className="font-medium text-center">Preprandial</TableCell>
+                    {medicationArray.fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                            <TableCell className="font-medium text-left px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.medicationName`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="medication name" {...field} className='w-full placeholder:text-xs focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.dosage`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger className="w-[100px] placeholder:text-xs focus:ring-1 font-normal focus:ring-[#8BC2F2] rounded-sm" >
+                                                <SelectValue className="" placeholder="dosage" />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="HS">HS</SelectItem>
+                                                <SelectItem value="BDS">BDS</SelectItem>
+                                                <SelectItem value="TDS">TDS</SelectItem>
+                                                <SelectItem value="QDS">QDS</SelectItem>
+                                                <SelectItem value="SOS">SOS</SelectItem>
+                                                <SelectItem value="Custom">Custom</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.days`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="days" {...field} className='w-[70px] placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.route`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger className="placeholder:text-xs w-[100px] focus:ring-1 font-normal focus:ring-[#8BC2F2] rounded-sm" >
+                                                <SelectValue className="" placeholder="route" />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="topical">Topical</SelectItem>
+                                                <SelectItem value="oral">Oral</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.eye`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                            <SelectTrigger className="placeholder:text-xs w-[100px] focus:ring-1 font-normal focus:ring-[#8BC2F2] rounded-sm" >
+                                                <SelectValue className="" placeholder="eye" />
+                                            </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="OD">OD</SelectItem>
+                                                <SelectItem value="OS">OS</SelectItem>
+                                                <SelectItem value="OU">OU</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`medication.${index}.instruction`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Textarea placeholder="instruction" {...field} className='w-full placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
                         </TableRow>
-                    )}
-                </TableBody>
+                    ))}
+                    </TableBody>
                 </Table>
             </CardContent>
-            <div onClick={medicationRow} className='absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
+            <div onClick={addMedicationRow} className='absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
                 <PlusCircle size={15} />
                 <p className='text-xs'>Add</p>
             </div>
@@ -172,24 +463,70 @@ const Diagnosis = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium text-left">ON-Eye</TableCell>
-                            <TableCell className="font-medium text-center">ON-Optics Centre</TableCell>
-                            <TableCell className="font-medium text-center">-</TableCell>
-                            <TableCell className="font-medium text-center">No notes</TableCell>
+                    {referralArray.fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                            <TableCell className="font-medium text-left px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`referral.${index}.hospitalName`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="hospital name" {...field} className='w-full placeholder:text-xs focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-left px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`referral.${index}.opticalName`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Input placeholder="optical name" {...field} className='w-full placeholder:text-xs focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`referral.${index}.reason`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Textarea placeholder="reason" {...field} className='w-full placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell className="font-medium text-center px-0.5">
+                                <FormField
+                                    control={form.control}
+                                    name={`referral.${index}.note`}
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                        <Textarea placeholder="note" {...field} className='w-full placeholder:text-xs text-sm h-10 focus-visible:ring-1 focus-visible:ring-[#8BC2F2] rounded-sm' />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                            </TableCell>
                         </TableRow>
-                        {showReferralTable && (
-                            <TableRow>
-                                <TableCell className="font-medium text-left">ON-Eye</TableCell>
-                                <TableCell className="font-medium text-center">ON-Optics Centre</TableCell>
-                                <TableCell className="font-medium text-center">Diagnosis</TableCell>
-                                <TableCell className="font-medium text-center">No notes</TableCell>
-                            </TableRow>
-                        )}
+                    ))}
                     </TableBody>
                     </Table>
                 </CardContent>
-                <div onClick={referralRow} className='absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
+                <div onClick={addReferralRow} className='absolute bottom-0 right-6 bg-[#0A416F] px-3 text-white hover:bg-[#8BC2F2] hover:text-[#0A416F] flex h-7 w-20 items-center justify-center gap-2 rounded-sm'>
                     <PlusCircle size={15} />
                     <p className='text-xs'>Add</p>
                 </div>
@@ -222,8 +559,9 @@ const Diagnosis = () => {
             </div>
         </div>
 
-        <Button className='block mx-auto my-4 w-1/2 tablet:w-1/4 bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F]'>Save</Button>
-    </section>
+        <Button onSubmit={onSubmit} className='block mx-auto my-4 w-1/2 tablet:w-1/4 bg-[#0A416F] hover:bg-[#8BC2F2] hover:text-[#0A416F]'>Save</Button>
+    </form>
+    </Form>
   )
 }
 
