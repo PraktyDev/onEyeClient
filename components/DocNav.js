@@ -42,7 +42,7 @@ const DocNav = () => {
     <section className="flex gap-0 shadow-md">
     <Sheet>
         <SheetTrigger>
-        <div className="bg-[#8BC2F2] flex laptop:hidden items-center justify-center rounded-tl-sm rounded-bl-sm p-1 shadow-md w-12 h-auto transition-transform duration-700 ease-in-out transform scale-100 hover:scale-90">
+        <div className="bg-[#8BC2F2] flex laptop:hidden items-center justify-center rounded-tl-sm rounded-bl-sm p-1 shadow-md w-12 h-16 transition-transform duration-700 ease-in-out transform scale-100 hover:scale-90">
             <OnLogo />
         </div>
         </SheetTrigger>
@@ -134,10 +134,10 @@ const DocNav = () => {
         </SheetContent>
     </Sheet>
 
-    <div className="w-full rounded-tr-sm rounded-br-sm laptop:rounded-md flex justify-between items-center bg-white py-3 px-2 laptop:px-4">
+    <div className="w-full rounded-tr-sm rounded-br-sm laptop:rounded-md flex justify-between items-center bg-white py-3 px-2 laptop:px-4 h-16">
         <div className="flex flex-col text-[#0A416F]">
             <h3 className="font-semibold text-sm tablet:text-md">Welcome Dr <span>{firstName ? firstName : 'null'}</span></h3>
-            <p className="text-xs laptop:text-sm text-slate-700 font-light">You have seen 0 patient(s) today</p>
+            <p className="text-xs text-nowrap laptop:text-sm text-slate-700 font-light">You have seen 0 patient(s) today</p>
         </div>
 
         <div className="flex items-center gap-3">
